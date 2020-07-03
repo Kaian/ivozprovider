@@ -7,10 +7,8 @@ on:
     branches: [ bleeding ]
 
 jobs:
-  build:
-
+  composer:
     runs-on: ubuntu-18.04
-
     steps:
     - uses: actions/checkout@v2
 
@@ -32,8 +30,14 @@ jobs:
       run: composer install --ignore-platform-reqs --prefer-dist --no-progress --no-suggest
       working-directory: library
 
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
-
-    # - name: Run test suite
-    #   run: composer run-script test
+  phpstan:
+    needs: composer
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: phpstan
+      uses: chindit/actions-phpstan@1.0.1
+      with:
+        arguments: analyze --level 4 --ansi --no-progress --autoload-file library/vendor/autoload.php --configuration phpstan.neon library/Ivoz
+            
