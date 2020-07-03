@@ -2,8 +2,6 @@
 
 set -e
 
-cd /opt/irontec/ivozprovider/
-
 run_test () {
     local ROOT=$1
     local TARGET="$1/$2"
