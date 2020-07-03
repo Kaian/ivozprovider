@@ -44,7 +44,7 @@ jobs:
     - name: Use custom docker image
       uses: docker://ironartemis/ivozprovider-testing-phpstan
       with:
-        args: /opt/irontec/ivozprovider/library/bin/test-phpstan
+        args: library/bin/test-phpstan
 
 
  
