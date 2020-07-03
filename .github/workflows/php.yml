@@ -18,6 +18,7 @@ jobs:
       
     - name: Get Composer Cache Directory
       id: composer-cache
+      working-directory: library
       run: |
         echo "::set-output name=dir::$(composer config cache-files-dir)"
 
@@ -32,7 +33,7 @@ jobs:
     - name: Cache PHP dependencies
       uses: actions/cache@v1
       with:
-        path: vendor
+        path: library/vendor
         key: ${{ runner.OS }}-build-${{ hashFiles('**/composer.lock') }}
 
     - name: Install dependencies
