@@ -37,5 +37,5 @@ jobs:
     - name: phpstan
       uses: chindit/actions-phpstan@1.0.1
       with:
-        arguments: "--level 4 --ansi --no-progress --autoload-file library/vendor/autoload.php --configuration phpstan.neon library/Ivoz"
+        arguments: "library/Ivoz --level 4 --ansi --no-progress --autoload-file library/vendor/autoload.php --configuration phpstan.neon"
             
