@@ -73,11 +73,7 @@ jobs:
       run: composer install --ignore-platform-reqs --prefer-dist --no-progress --no-suggest
       working-directory: library
             
-    - name: phpstan (PHP Static Analysis)
-      uses: actions-x/phpstan@v1
+    - name: phpstan on library
+      uses: chindit/actions-phpstan@master
       with:
-        installComposer: 0
-        level: 5
-        paths: library/Ivoz
-        configPath: library/phpstan.neon
-        autoload-file: library/vendor/autoload.php
+        arguments: "analyse library/Ivoz --level 4 --ansi --no-progress --autoload-file=library/vendor/autoload.php --configuration=library/phpstan.neon"
