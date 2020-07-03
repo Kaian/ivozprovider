@@ -30,12 +30,12 @@ jobs:
       run: composer install --ignore-platform-reqs --prefer-dist --no-progress --no-suggest
       working-directory: library
 
-  phpstan:
-    needs: composer
-    runs-on: ubuntu-18.04
-    steps:
+  #phpstan:
+  # needs: composer
+  # runs-on: ubuntu-18.04
+  # steps:
     - name: phpstan on library
       uses: chindit/actions-phpstan@1.0.1
-      #with:
-      #  arguments: "library/Ivoz --level 4 --ansi --no-progress --autoload-file library/vendor/autoload.php"
+      with:
+        arguments: "library/Ivoz --level 4 --ansi --no-progress --autoload-file library/vendor/autoload.php"
             
