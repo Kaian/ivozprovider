@@ -33,13 +33,17 @@ jobs:
   phpstan:
    needs: composer
    runs-on: ubuntu-18.04
+   
    steps:
+    - uses: actions/checkout@v2
+
     - name: Install dependencies
+      if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --ignore-platform-reqs --prefer-dist --no-progress --no-suggest
       working-directory: library
             
     - name: phpstan on library
-      uses: chindit/actions-phpstan@1.0.1
+      uses: chindit/actions-phpstan@master
       with:
         arguments: "library/Ivoz --level 4 --ansi --no-progress --autoload-file library/vendor/autoload.php"
             
