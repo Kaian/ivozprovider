@@ -8,10 +8,10 @@ on:
   pull_request:
     paths:
       - '**.php'
-      - 'library'
-      - 'microservices'
-      - 'schema'
-      - 'web/rest'
+      - 'library/**'
+      - 'microservices/**'
+      - 'schema/**'
+      - 'web/rest/**'
 jobs:
   image:
     runs-on: ubuntu-latest
