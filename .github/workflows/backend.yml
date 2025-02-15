@@ -62,9 +62,11 @@ jobs:
   composer:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/cache@v4
         with:
-          path: 'library/vendor'
+          path: /tmp/composer-cache
           key: ${{ github.repository }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ github.repository }}-composer-
