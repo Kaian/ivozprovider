@@ -68,11 +68,13 @@ jobs:
           key: ${{ github.repository }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ github.repository }}-composer-
+
       - name: Install composer dependencies
         uses: php-actions/composer@v6
         with:
           php_version: "8.2"
           php_extensions: redis exif
+          container_workdir: library
 
   static:
     needs: composer
