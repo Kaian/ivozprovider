@@ -1,0 +1,16 @@
+name: Generic
+
+on: [pull_request]
+
+jobs:
+  commit-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+
+      - name: Check all commit message tags are correct
+        run: |
+          ./library/bin/test-commit-tags origin/${{ github.base_ref }}

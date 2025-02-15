@@ -1,0 +1,97 @@
+name: Backend
+
+on:
+  push:
+    branches:
+      - bleeding
+      - tempest
+  pull_request:
+    paths:
+      - '**.php'
+      - 'library'
+      - 'microservices'
+      - 'schema'
+      - 'web/rest'
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker buildx create --use
+          docker buildx build \
+            --cache-from=type=registry,ref=ghcr.io/${{ github.repository }}/testing-base:cache \
+            --cache-to=type=registry,ref=ghcr.io/${{ github.repository }}/testing-base:cache,mode=max \
+            --tag ghcr.io/${{ github.repository }}/testing-base:${{ github.sha }} \
+            --file tests/docker/Dockerfile \
+            --push .
+
+
+  static:
+    needs: image
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/testing-base:${{ github.sha }}
+      options: --volume ${{ github.workspace }}:/opt/irontec/ivozprovider
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: /opt/irontec/ivozprovider/library/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: /opt/irontec/ivozprovider/library/bin/composer-install --prefer-dist --no-progress
+
+      - name: Run phpspec tests
+        run: /opt/irontec/ivozprovider/library/bin/test-phpspec
+
+      - name: Run psalm tests
+        run: /opt/irontec/ivozprovider/library/bin/test-psalm
+
+      - name: Check psalm baseline is up-to-date
+        run: /opt/irontec/ivozprovider/library/bin/test-psalm-update-baseline
+
+  codestyle:
+    needs: image
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/testing-base:${{ github.sha }}
+      options: --volume ${{ github.workspace }}:/opt/irontec/ivozprovider
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: /opt/irontec/ivozprovider/library/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: /opt/irontec/ivozprovider/library/bin/composer-install --prefer-dist --no-progress
+
+      - name: Check php codestyle
+        run: /opt/irontec/ivozprovider/library/bin/test-codestyle --full
+
+      - name: Check behat api files codestyle
+        run: /opt/irontec/ivozprovider/library/bin/test-codestyle-gherkin
