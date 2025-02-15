@@ -43,7 +43,7 @@ jobs:
             --cache-from=type=registry,ref=ghcr.io/${{ github.repository }}/testing-backend:cache \
             --cache-to=type=registry,ref=ghcr.io/${{ github.repository }}/testing-backend:cache,mode=max \
             --tag ghcr.io/${{ github.repository }}/testing-backend:${{ steps.hash.outputs.dockerfile-hash }} \
-            --file backend/docker/Dockerfile \
+            --file tests/backend/Dockerfile \
             --push .
 
   composer:
