@@ -39,6 +39,7 @@ RUN apt update \
         php-xdebug \
         php-zip \
         localepurge \
+        npm \
     && npm install -g swagger-cli \
     && pip install --break-system-packages reformat-gherkin \
     && sed -i 's/variables_order = "GPCS"/variables_order = "EGPCS"/g' /etc/php/8.2/cli/php.ini \
