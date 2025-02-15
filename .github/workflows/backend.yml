@@ -19,9 +19,15 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
+    outputs:
+      dockerfile-hash: ${{ steps.hash.outputs.dockerfile-hash }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Get Dockerfile hash
+        id: hash
+        run: echo "::set-output name=dockerfile-hash::$(sha256sum tests/backend/Dockerfile | awk '{ print $1 }')"
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
@@ -34,17 +40,17 @@ jobs:
         run: |
           docker buildx create --use
           docker buildx build \
-            --cache-from=type=registry,ref=ghcr.io/${{ github.repository }}/testing-base:cache \
-            --cache-to=type=registry,ref=ghcr.io/${{ github.repository }}/testing-base:cache,mode=max \
-            --tag ghcr.io/${{ github.repository }}/testing-base:${{ github.sha }} \
-            --file tests/docker/Dockerfile \
+            --cache-from=type=registry,ref=ghcr.io/${{ github.repository }}/testing-backend:cache \
+            --cache-to=type=registry,ref=ghcr.io/${{ github.repository }}/testing-backend:cache,mode=max \
+            --tag ghcr.io/${{ github.repository }}/testing-backend:${{ steps.hash.outputs.dockerfile-hash }} \
+            --file backend/docker/Dockerfile \
             --push .
 
   composer:
-    needs: image
+    needs: [image]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}/testing-base:${{ github.sha }}
+      image: ghcr.io/${{ github.repository }}/testing-backend:${{ needs.image.outputs.dockerfile-hash }}
       options: --volume ${{ github.workspace }}:/opt/irontec/ivozprovider
     steps:
       - uses: actions/checkout@v4
@@ -61,10 +67,10 @@ jobs:
 
 
   static:
-    needs: composer
+    needs: [composer, image]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}/testing-base:${{ github.sha }}
+      image: ghcr.io/${{ github.repository }}/testing-backend:${{ needs.image.outputs.dockerfile-hash }}
       options: --volume ${{ github.workspace }}:/opt/irontec/ivozprovider
     steps:
       - uses: actions/checkout@v4
@@ -81,10 +87,10 @@ jobs:
       - run: /opt/irontec/ivozprovider/library/bin/test-psalm-update-baseline
 
   codestyle:
-    needs: composer
+    needs: [composer, image]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}/testing-base:${{ github.sha }}
+      image: ghcr.io/${{ github.repository }}/testing-backend:${{ needs.image.outputs.dockerfile-hash }}
       options: --volume ${{ github.workspace }}:/opt/irontec/ivozprovider
     steps:
       - uses: actions/checkout@v4
