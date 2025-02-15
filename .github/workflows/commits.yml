@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   commit-tags:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -12,5 +12,4 @@ jobs:
             fetch-depth: 0
 
       - name: Check all commit message tags are correct
-        run: |
-          ./library/bin/test-commit-tags origin/${{ github.base_ref }}
+        run: library/bin/test-commit-tags origin/${{ github.base_ref }}
