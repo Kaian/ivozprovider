@@ -43,6 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/testing-base:${{ github.sha }}
+      options: --volume ${{ github.workspace }}:/opt/irontec/ivozprovider
     steps:
       - uses: actions/checkout@v4
 
@@ -62,6 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/testing-base:${{ github.sha }}
+      options: --volume ${{ github.workspace }}:/opt/irontec/ivozprovider
     steps:
       - uses: actions/checkout@v3
 
@@ -80,14 +82,15 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/testing-base:${{ github.sha }}
+      options: --volume ${{ github.workspace }}:/opt/irontec/ivozprovider
     steps:
       - uses: actions/checkout@v4
 
       - name: Cache Composer dependencies
         uses: actions/cache/restore@v4
         with:
-            path: /opt/irontec/ivozprovider/library/vendor
-            key: ${{ github.repository }}-composer-${{ hashFiles('**/composer.lock') }}
+          path: '**/vendor/**'
+          key: ${{ github.repository }}-composer-${{ hashFiles('**/composer.lock') }}
 
       - run: /opt/irontec/ivozprovider/library/bin/test-codestyle --full
       - run: /opt/irontec/ivozprovider/library/bin/test-codestyle-gherkin
