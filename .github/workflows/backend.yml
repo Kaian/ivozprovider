@@ -50,7 +50,7 @@ jobs:
       - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
-          path: '**/vendor/**'
+          path: 'library/vendor'
           key: ${{ github.repository }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ github.repository }}-composer-
@@ -70,10 +70,11 @@ jobs:
       - name: Cache Composer dependencies
         uses: actions/cache/restore@v4
         with:
-          path: '**/vendor/**'
+          path: 'library/vendor'
           key: ${{ github.repository }}-composer-${{ hashFiles('**/composer.lock') }}
           fail-on-cache-miss: true
 
+      - run: /opt/irontec/ivozprovider/library/bin/composer-install --prefer-dist --no-progress
       - run: /opt/irontec/ivozprovider/library/bin/test-phpspec
       - run: /opt/irontec/ivozprovider/library/bin/test-psalm
       - run: /opt/irontec/ivozprovider/library/bin/test-psalm-update-baseline
@@ -90,9 +91,10 @@ jobs:
       - name: Cache Composer dependencies
         uses: actions/cache/restore@v4
         with:
-          path: '**/vendor/**'
+          path: 'library/vendor'
           key: ${{ github.repository }}-composer-${{ hashFiles('**/composer.lock') }}
           fail-on-cache-miss: true
 
+      - run: /opt/irontec/ivozprovider/library/bin/composer-install --prefer-dist --no-progress
       - run: /opt/irontec/ivozprovider/library/bin/test-codestyle --full
       - run: /opt/irontec/ivozprovider/library/bin/test-codestyle-gherkin
