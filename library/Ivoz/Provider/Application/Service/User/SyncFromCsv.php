@@ -100,6 +100,9 @@ class SyncFromCsv
 
                     if ($ddi->isNew()) {
                         $user->setOutgoingDdi($ddi);
+
+                        $ddi->setUser($user);
+                        $ddi->setRouteType('user');
                     }
 
                     $entities[] = $ddi;
